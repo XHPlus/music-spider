@@ -68,7 +68,8 @@ class ZhuoLinMusic(object):
         headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
         }
-        mp3_response = self.download(mp3_url, headers=headers)
+        # mp3_response = self.download(mp3_url, headers=headers)
+        mp3_response = requests.get(mp3_url)
         return mp3_response
 
     def download_playlist(self, playlist_id: str = "3778678"):
@@ -89,9 +90,13 @@ class ZhuoLinMusic(object):
             mp3_file_name = os.path.join(self.mp3_dir, "{}.mp3".format(unique_name))
             if not os.path.isfile(mp3_file_name):
                 print("开始下载: {} ...".format(unique_name))
-                mp3_response = self.download_by_music_id(item["id"])
-                with open(mp3_file_name, "wb") as f:
-                    f.write(mp3_response.content)
+                try:
+                    mp3_response = self.download_by_music_id(item["id"])
+                    print('mp3_response: {}'.format(mp3_response))
+                    with open(mp3_file_name, "wb") as f:
+                        f.write(mp3_response.content)
+                except:
+                    print("{} download fail.".format(unique_name))
                 time.sleep(2)
             else:
                 print("跳过已下载歌曲: {}".format(unique_name))
@@ -149,5 +154,6 @@ class ZhuoLinMusic(object):
 
 
 if __name__ == "__main__":
-    zm = ZhuoLinMusic()
-    zm.download_playlist()
+    zm = ZhuoLinMusic('好听')
+    # zm.download_playlist()
+    zm.download_playlist('2573280837')
